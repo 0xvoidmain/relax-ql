@@ -1,0 +1,33 @@
+{
+  "name": "relaxql",
+  "version": "0.1.0",
+  "description": "A Query language for mongoosejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test.js"
+  },
+  "author": "tunght91",
+  "license": "ISC",
+  "dependencies": {
+    "deep-obj": "^1.2.3",
+    "es6-promise": "^4.0.5",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.8.5"
+  },
+  "bugs": {
+    "url": "https://github.com/tunght91/mql/issues"
+  },
+  "keywords": [
+    "deep",
+    "object",
+    "get",
+    "set",
+    "mongo",
+    "mongodb",
+    "mongoose",
+    "query",
+    "sql",
+    "populate"
+  ],
+  "homepage": "https://github.com/tunght91/mql#readme"
+}
