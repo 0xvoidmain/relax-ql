@@ -4,7 +4,6 @@ var ELEMENT_OPERATORS = ['TYPE', 'EXISTS'];
 var EVALUATION_OPERATORS = ['MOD', 'REGEX', 'TEXT', 'WHERE'];
 var ARRAY_OPERATORS = ['ALL', 'MATCH', 'SIZE'];
 var utils = require('../../utils');
-var _ = require('lodash');
 
 function isStringType(s) {
   return s[0] == '"' && s[s.length - 1] == '"' || s[0] == "'" && s[s.length - 1] == "'";
@@ -59,7 +58,7 @@ function tryGetOperation(s, j) {
 }
 
 function parseArgument(s, autoId) {
-  if (!s || utils.isParam(s)) {
+  if (!s) {
     return s;
   }
   var and = s.split('&&').map(e => e.trim()).filter(e => e);
@@ -108,9 +107,9 @@ function parseArgument(s, autoId) {
         if (ope == 'eq') result[a] = { $size: tryParseValue(b) };
         else {
           result[a] = result[a] || {};
-          if (!_.isObject(result[a])) result[a] = { '$eq': result[a] };
+          if (!utils.isObject(result[a])) result[a] = { '$eq': result[a] };
           result[a]['$size'] = result[a]['$size'] || {};
-          if (!_.isObject(result[a]['$size'])) result[a]['$size'] = { '$eq': result[a]['$size'] };
+          if (!utils.isObject(result[a]['$size'])) result[a]['$size'] = { '$eq': result[a]['$size'] };
           result[a]['$size']['$' + ope] = tryParseValue(b);
         }
       }
@@ -118,7 +117,7 @@ function parseArgument(s, autoId) {
         if (ope == 'eq') result[a] = tryParseValue(b);
         else {
           result[a] = result[a] || {};
-          if (!_.isObject(result[a])) {
+          if (!utils.isObject(result[a])) {
             result[a] = {
               '$eq': result[a]
             };

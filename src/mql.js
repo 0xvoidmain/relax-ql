@@ -246,11 +246,13 @@ function execMQL(query, params) {
     });
 }
 
-function mql() {
-  var strings = arguments[0];
-  var args = Array.prototype.slice.call(arguments, 1);
-  strings = Array.isArray(strings) ? utils.join(strings) : strings;
-  var template = parse(strings);
+function relaxQL(s, args) {
+  if (Array.isArray(s)) {
+    s = utils.join(s);
+    args = Array.prototype.slice.call(arguments, 1);
+  }
+  args = args || {};
+  var template = parse(s);
   return {
     template: template,
     args: args,
@@ -267,9 +269,9 @@ function mql() {
   };
 }
 
-mql.init = function (config) {
+relaxQL.init = function (config) {
   MODELS = Object.assign(MODELS, config.models);
   CONVERTERS = Object.assign(CONVERTERS, config.converters || {});
 };
 
-module.exports = mql;
+module.exports = relaxQL;

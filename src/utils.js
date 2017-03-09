@@ -1,3 +1,11 @@
+function isObject(o) {
+  if (o == undefined || o == null) {
+    return false;
+  }
+  if (typeof o == 'object') {
+    return true;
+  }
+}
 function indentSize(line) {
   var count = 0;
   for (var i = 0; i < line.length; i++) {
@@ -96,5 +104,6 @@ module.exports = {
   clone: clone,
   paramFormat: paramFormat,
   isParam: isParam,
-  getParamName
+  getParamName: getParamName,
+  isObject: isObject
 };
