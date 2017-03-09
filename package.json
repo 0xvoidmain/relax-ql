@@ -1,5 +1,5 @@
 {
-  "name": "relaxql",
+  "name": "relax-ql",
   "version": "0.1.0",
   "description": "A Query language for mongoosejs",
   "main": "index.js",
