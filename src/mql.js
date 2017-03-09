@@ -246,7 +246,7 @@ function execMQL(query, params) {
     });
 }
 
-function relaxQL(s, args) {
+function relaxql(s, args) {
   if (Array.isArray(s)) {
     s = utils.join(s);
     args = Array.prototype.slice.call(arguments, 1);
@@ -257,21 +257,39 @@ function relaxQL(s, args) {
     template: template,
     args: args,
     exec: (callback) => {
-      if (callback) {
-        execMQL(template, args)
-          .then(data => callback(null, data))
-          .catch(err => callback(err));
-      }
-      else {
-        return execMQL(template, args);
-      }
+      return relaxql.exec({
+        template: template,
+        args: args
+      }, callback);
     }
   };
 }
 
-relaxQL.init = function (config) {
+relaxql.init = function (config) {
   MODELS = Object.assign(MODELS, config.models);
   CONVERTERS = Object.assign(CONVERTERS, config.converters || {});
 };
 
-module.exports = relaxQL;
+relaxql.exec = function(query, callback) {
+  var template = query.template;
+  if (!_.isObject(template)) {
+    if (typeof template == 'string') {
+      template = parse(template);
+    }
+    else {
+      throw new Error('Invalid query'); 
+    }
+  }
+  if (!_.isObject(query.args)) throw new Error('Invalid query');
+
+  if (callback) {
+    execMQL(template, query.args)
+      .then(data => callback(null, data))
+      .catch(err => callback(err));
+  }
+  else {
+    return execMQL(template, query.args);
+  }
+}
+
+module.exports = relaxql;

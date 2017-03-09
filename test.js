@@ -10,9 +10,11 @@ mql.init({
   models: require('./db')
 });
 var query = mql(`
-  reviews: Review[$review_id]
+  reviews: Review['56606f2cc614fa1100320e61']
     rating
     likes
+      *: User[this.$$value]
+        displayName
   `, {
     review_id: '56606f2cc614fa1100320e61'
   });
