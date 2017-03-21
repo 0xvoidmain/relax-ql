@@ -4,7 +4,8 @@ var optionParseMethod = {
   limit: require('./optionLimit'),
   asc: require('./optionASC'),
   desc: require('./optionDESC'),
-  skip: require('./optionSkip')
+  skip: require('./optionSkip'),
+  unlean: require('./optionUnlean')
 };
 
 function parseOptions(s) {
@@ -24,8 +25,8 @@ function parseOptions(s) {
       options['convert'] = options['convert'] || [];
       options['convert'].push({
         name: optionName,
-        arg: parseOptionParam(s)
-      })
+        arg: parseOptionParam(param)
+      });
     }
   });
 

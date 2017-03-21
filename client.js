@@ -1,7 +1,7 @@
 var parse = require('./src/parse');
 var utils = require('./src/utils');
 var configUrl = null;
-
+var requestFunc = null;
 function relaxQL(s, args) {
   if (Array.isArray(s)) {
     s = utils.join(s);
@@ -13,15 +13,18 @@ function relaxQL(s, args) {
     template: template,
     args: args,
     exec: (url, callback) => {
-      if (typeof url == 'function') {
+      if (typeof requestFunc !== 'function') {
+        throw new Error('Can not exec because you have been set requestFunc');
+      }
+      if (typeof url === 'function') {
         callback = url;
         url = configUrl;
       }
       if (callback) {
-        requestFunc(url, template, args, callback);
+        requestFunc && requestFunc(url, template, args, callback);
       }
       else {
-        return requestFunc(url, template, args);
+        return requestFunc && requestFunc(url, template, args);
       }
     }
   };
@@ -30,6 +33,6 @@ function relaxQL(s, args) {
 relaxQL.init = function(config) {
   configUrl = config.url;
   requestFunc = config.requestFunc;
-}
+};
 
 module.exports = relaxQL;

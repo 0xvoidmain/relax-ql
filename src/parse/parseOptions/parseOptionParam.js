@@ -2,7 +2,6 @@ var utils = require('../../utils');
 
 function parseOptionParam(s) {
   var stack = [];
-  var isParam = false;
   var value = '';
   for (var i = 0; i < s.length; i++) {
     var c = s[i];
@@ -19,14 +18,7 @@ function parseOptionParam(s) {
     throw new Error('Syntax error');
   }
 
-  if (utils.isParam(value)) {
-    return utils.paramFormat(value)
-  }
-  else {
-    var number = parseFloat(value);
-    if (isNaN(number)) return value;
-    return number;
-  }
+  return utils.tryParseValue(value);
 }
 
 module.exports = parseOptionParam;

@@ -35,7 +35,7 @@ function parseQuery(line, i, lineNumber) {
       else { method += c; }
     }
     else if (state === ARGUMENT) {
-      if ((c === ')' || c === ']') && stack.length === 0 ) { state = OPTIONS; }
+      if ((c === ')' || c === ']') && stack.length === 0) { state = OPTIONS; }
       else { argument += c; }
     }
     else if (state === OPTIONS) {
@@ -44,7 +44,6 @@ function parseQuery(line, i, lineNumber) {
   }
 
   if (stack.length > 0) {
-    console.log(stack);
     throw new Error(`Syntax error: Missing ) or ] at line ${lineNumber}: ${line}`);
   }
   try {

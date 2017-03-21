@@ -14,7 +14,7 @@ function fieldDefault(level) {
 }
 
 function clean(e) {
-  if (Object.keys(e.fields).length === 0) {
+  if (!e.fields || Object.keys(e.fields).length === 0) {
     delete e.fields;
   }
   if (!e.query || (!e.query.model && !e.query.method)) {
@@ -37,14 +37,11 @@ function parseTemplate(template) {
   var ll = { level: 1, currentIndentSize: -1, indentLineLevel: {} };
   var stackQueries = [];
   var parentQuery = null;
-  var currentQuery = null;
+  var currentQuery = fieldDefault(0);
+  currentQuery.name = '$$root';
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
     if (!line.trim()) {
-      if (i === 0) {
-        currentQuery = fieldDefault(0);
-        currentQuery.name = '$$root';
-      }
       continue;
     }
 
@@ -87,7 +84,7 @@ function parseTemplate(template) {
           query = parseQuery(line, j + 1, i);
         }
         break;
-      };
+      }
       if (c === '(') {
         projection = parseProjection(line, j, i);
         break;
@@ -106,9 +103,6 @@ function parseTemplate(template) {
     currentQuery = parentQuery;
   }
 
-  if (currentQuery.name === '$$root' && Object.keys(currentQuery.fields).length === 1) {
-    currentQuery = currentQuery.fields[Object.keys(currentQuery.fields)[0]];
-  }
   return clean(currentQuery);
 }
 

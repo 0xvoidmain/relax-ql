@@ -23,7 +23,7 @@ function splitLines(s) {
 }
 
 function paramFormat(paramName) {
-  return `$${paramName}`
+  return `$${paramName}`;
 }
 
 function isParam(s) {
@@ -96,6 +96,34 @@ function clone(o) {
   return newO;
 }
 
+function isStringType(s) {
+  return s[0] == '"' && s[s.length - 1] == '"' || s[0] == "'" && s[s.length - 1] == "'";
+}
+
+function tryParseValue(s) {
+  if (isParam(s)) {
+    return s;
+  }
+  else if (isStringType(s)) {
+    return s.slice(1, s.length - 1);
+  }
+  else if (s.toLowerCase() == 'true') {
+    return true;
+  }
+  else if (s.toLowerCase() == 'false') {
+    return false;
+  }
+
+  var vNumber = null;
+  if (s.indexOf('.') >= 0) vNumber = parseFloat(s);
+  else vNumber = parseInt(s);
+
+  if (!isNaN(vNumber)) {
+    return vNumber;
+  }
+  return paramFormat(s);
+}
+
 module.exports = {
   indentSize: indentSize,
   splitLines: splitLines,
@@ -105,5 +133,7 @@ module.exports = {
   paramFormat: paramFormat,
   isParam: isParam,
   getParamName: getParamName,
-  isObject: isObject
+  isObject: isObject,
+  tryParseValue: tryParseValue,
+  isStringType: isStringType
 };

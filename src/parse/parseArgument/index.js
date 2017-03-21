@@ -1,39 +1,10 @@
-var LOGICAL_OPERATORS = ['||', '&&'];
-var COMPARISON_OPERATORS = ['==', '!=', '<', '>', '>=', '<=', 'IN', 'NIN', 'ALL'];
-var ELEMENT_OPERATORS = ['TYPE', 'EXISTS'];
-var EVALUATION_OPERATORS = ['MOD', 'REGEX', 'TEXT', 'WHERE'];
-var ARRAY_OPERATORS = ['ALL', 'MATCH', 'SIZE'];
+// var LOGICAL_OPERATORS = ['||', '&&'];
+// var COMPARISON_OPERATORS = ['==', '!=', '<', '>', '>=', '<=', 'IN', 'NIN', 'ALL'];
+// var ELEMENT_OPERATORS = ['TYPE', 'EXISTS'];
+// var EVALUATION_OPERATORS = ['MOD', 'REGEX', 'TEXT', 'WHERE'];
+// var ARRAY_OPERATORS = ['ALL', 'MATCH', 'SIZE'];
 var utils = require('../../utils');
 
-function isStringType(s) {
-  return s[0] == '"' && s[s.length - 1] == '"' || s[0] == "'" && s[s.length - 1] == "'";
-}
-function tryParseValue(s) {
-  if (utils.isParam(s)) {
-    return s;
-  }
-  else if (isStringType(s)) {
-    return s.slice(1, s.length - 1);
-  }
-  else if (s.toLowerCase() == 'true') {
-    return true;
-  }
-  else if (s.toLowerCase() == 'false') {
-    return false;
-  }
-  else {
-    var vNumber = null;
-    if (s.indexOf('.') >= 0) vNumber = parseFloat(s);
-    else vNumber = parseInt(s);
-
-    if (!isNaN(vNumber)) {
-      return vNumber;
-    }
-    else {
-      return utils.paramFormat(s);
-    }
-  }
-}
 function tryGetOperation(s, j) {
   var defineO = {
     '==': 'eq',
@@ -48,7 +19,8 @@ function tryGetOperation(s, j) {
     'in': 'in',
     'nin': 'nin',
     'all': 'all'
-  }
+  };
+
   for (var i = 5; i >= 0; i--) {
     var k = s.slice(j, j + i).trim();
     var r = defineO[k];
@@ -91,30 +63,30 @@ function parseArgument(s, autoId) {
     b = b.trim();
     if (!b) {
       if (autoId) {
-        result['_id'] = tryParseValue(a);
+        result['_id'] = utils.tryParseValue(a);
       }
       else {
         if (and.length > 1) {
           throw new Error(`Error: Cannot parse argument`);
         }
-        return tryParseValue(a);
+        return utils.tryParseValue(a);
       }
     }
     else {
       var size = a.slice(-5) == '.size';
       if (size) {
         a = a.slice(0, a.length - 5);
-        if (ope == 'eq') result[a] = { $size: tryParseValue(b) };
+        if (ope == 'eq') result[a] = { $size: utils.tryParseValue(b) };
         else {
           result[a] = result[a] || {};
           if (!utils.isObject(result[a])) result[a] = { '$eq': result[a] };
           result[a]['$size'] = result[a]['$size'] || {};
           if (!utils.isObject(result[a]['$size'])) result[a]['$size'] = { '$eq': result[a]['$size'] };
-          result[a]['$size']['$' + ope] = tryParseValue(b);
+          result[a]['$size']['$' + ope] = utils.tryParseValue(b);
         }
       }
       else {
-        if (ope == 'eq') result[a] = tryParseValue(b);
+        if (ope == 'eq') result[a] = utils.tryParseValue(b);
         else {
           result[a] = result[a] || {};
           if (!utils.isObject(result[a])) {
@@ -122,7 +94,7 @@ function parseArgument(s, autoId) {
               '$eq': result[a]
             };
           }
-          result[a]['$' + ope] = tryParseValue(b);
+          result[a]['$' + ope] = utils.tryParseValue(b);
         }
       }
     }

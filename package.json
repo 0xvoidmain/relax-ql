@@ -1,6 +1,6 @@
 {
   "name": "relax-ql",
-  "version": "1.2.2",
+  "version": "1.2.14",
   "description": "A Query language for mongoosejs",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,11 @@
     "mongoose": "^4.8.5"
   },
   "bugs": {
-    "url": "https://github.com/tunght91/mql/issues"
+    "url": "https://github.com/tunght91/relax-ql/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tunght91/relax-ql"
   },
   "keywords": [
     "deep",
@@ -29,5 +33,5 @@
     "sql",
     "populate"
   ],
-  "homepage": "https://github.com/tunght91/mql#readme"
+  "homepage": "https://github.com/tunght91/relax-ql#readme"
 }

@@ -11,8 +11,7 @@ function tryGetValue(paramNames, params, data) {
   var value = deep.get(params, paramNames);
   if ((value === null || value === undefined) && data)  {
     var metadata = data.$$meta ? data.$$meta() : null;
-
-    while(parseParams[0] !== 'this' &&
+    while (parseParams[0] !== 'this' &&
       metadata && metadata.mql.name !== parseParams[0] &&
       metadata.parent && metadata.parent.$$meta)
     {
@@ -27,7 +26,7 @@ function tryGetValue(paramNames, params, data) {
 function insteadParam(data, obj, params) {
   var result = obj;
   if (typeof obj == 'string' && utils.isParam(obj)) {
-     return tryGetValue(obj, params, data);;
+    return tryGetValue(obj, params, data);
   }
   else if (_.isPlainObject(obj)) {
     result = Array.isArray(obj) ? [] : {};
@@ -48,13 +47,17 @@ function insteadParam(data, obj, params) {
   return result;
 }
 
-function appendOptions(options, mongoQuery, params) {
-  if (options.limit != null && options.limit != undefined && mongoQuery.limit) {
+function appendOptions(options, mongoQuery) {
+  if (options.limit != null && options.limit != undefined) {
     mongoQuery = mongoQuery.limit(options.limit);
   }
 
-  if (options.skip != null && options.skip != undefined && mongoQuery.skip) {
+  if (options.skip != null && options.skip != undefined) {
     mongoQuery = mongoQuery.skip(options.skip);
+  }
+
+  if (options.unlean != true) {
+    mongoQuery = mongoQuery.lean();
   }
 
   if (Array.isArray(options.sort) && mongoQuery.sort) {
@@ -88,7 +91,7 @@ function recursiveBuildSelectField(fields, preKey, result) {
   return result;
 }
 
-function buildSelectFields(mql, data, params) {
+function buildSelectFields(mql) {
   var selectFields = recursiveBuildSelectField(mql, '', {});
   if (Object.keys(selectFields).length === 0) {
     selectFields = undefined;
@@ -112,18 +115,18 @@ function buildQuery(result, mql, params) {
     }
 
     var method = MODELS[query.model][query.method](query.argument || undefined, selectFields);
-    method = appendOptions(query.options, method, params);
-    method = method.lean ? method.lean() : method;
+    method = appendOptions(query.options, method);
     method = method.exec ? method.exec() : method;
     return new Promise((resolve, reject) => {
       method.then(data => resolve({
-        data: data,
-        query: query
+        query: query,
+        data: data && data.toJSON && typeof data.toJSON == 'function' &&
+          data.constructor.name == 'model' ? data.toJSON() : data
       }))
       .catch(err => reject(err));
     });
   }
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     resolve({
       data: {},
       query: null
@@ -148,14 +151,16 @@ function mergeResult(result, mql, data) {
   if (mql.query) {
     if (mql.name == '*') {
       if (_.isNil(data)) {
-        var metadata = result.$$meta();
-        var parent = metadata.parent;
-        var pResult = parent[metadata.mql.name];
-        if (_.isArray(pResult)) {
-          pResult[metadata.index] = null;
-        }
-        else {
-          delete parent[metadata.mql.name];
+        if (result.$$meta) {
+          var metadata = result.$$meta();
+          var parent = metadata.parent;
+          var pResult = parent[metadata.mql.name];
+          if (_.isArray(pResult)) {
+            pResult[metadata.index] = null;
+          }
+          else {
+            delete parent[metadata.mql.name];
+          }
         }
       }
       else {
@@ -182,7 +187,9 @@ function initResult(result, mql, re, i) {
       result[mql.name] = re;
     }
   }
-  Object.defineProperty(re, '$$value', { enumerable: false, writable: false, value: primaryRe });
+  if (!re.hasOwnProperty('$$value')) {
+    Object.defineProperty(re, '$$value', { enumerable: false, writable: false, value: primaryRe });
+  }
   re.$$meta = () => ({
     mql: mql,
     parent: result,
@@ -220,7 +227,7 @@ function mongoQuery(result, mql, params) {
             promises.push(
               Promise.all(seriesFunc.map(func => func()))
                 .then(() => lastFunc && lastFunc())
-            )
+            );
           }
           else {
             promises.push(
@@ -235,14 +242,10 @@ function mongoQuery(result, mql, params) {
 }
 
 function execMQL(query, params) {
-  console.log(JSON.stringify(query, null, 4));
   var result = {};
   return mongoQuery(result, query, params)()
     .then(() => {
-        if (Object.keys(result).length === 1 && result.$$root) {
-          result = result.$$root;
-        }
-        return result;
+      return result.$$root;
     });
 }
 
@@ -265,7 +268,7 @@ function relaxql(s, args) {
   };
 }
 
-relaxql.init = function (config) {
+relaxql.add = function (config) {
   MODELS = Object.assign(MODELS, config.models);
   CONVERTERS = Object.assign(CONVERTERS, config.converters || {});
 };
@@ -277,7 +280,7 @@ relaxql.exec = function(query, callback) {
       template = parse(template);
     }
     else {
-      throw new Error('Invalid query'); 
+      throw new Error('Invalid query');
     }
   }
   if (!_.isObject(query.args)) throw new Error('Invalid query');
@@ -290,6 +293,6 @@ relaxql.exec = function(query, callback) {
   else {
     return execMQL(template, query.args);
   }
-}
+};
 
 module.exports = relaxql;
