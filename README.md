@@ -455,7 +455,7 @@ ql`
 - *this*: The pointer to parent
 - *this.$value*: The value of parent
 - := is select this attribute and result of query will overide to old value.
-- * is result of child query will overide to parent value
+- '*' is result of child query will overide to parent value
 
 ### How to access data of parent
 Can you see the format of relax-ql like this:
