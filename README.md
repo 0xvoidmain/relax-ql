@@ -71,7 +71,7 @@ ql`*: Review().limit(10)`
 ```
 
 # Example 2
-Bellow is a simple query. And now, we will do with a more complex query. We will get 10 reviews from database and each review contain information of reviewer.
+The code above is a simple query. And now, we will do with a more complex query. We will get 10 reviews from database and each review contain information of reviewer.
 
 With mongoosejs:
 ```javascript
@@ -101,8 +101,9 @@ Review
 
 With relax-ql:
 ```javascript
-ql`*: Review().limit(10)
-  authorDetail: User[this.author]`
+ql`
+  *: Review().limit(10)
+    authorDetail: User[this.author]`
 .exec()
 .then(reviews => console.log(reviews));
 ```
@@ -150,13 +151,14 @@ Review
 
 With relax-ql:
 ```javascript
-ql`*: Review().limit(10)
-  content
-  rating
-  likes(slice: 3)
-  author:= User[this.author]
-    displayName
-    email`
+ql`
+  *: Review().limit(10)
+    content
+    rating
+    likes(slice: 3)
+    author:= User[this.author]
+      displayName
+      email`
 .exec()
 .then(reviews => console.log(reviews));
 ```
