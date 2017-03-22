@@ -24,6 +24,7 @@ function tryGetOperation(s, j) {
     'TEXT': '$text',
     'WHERE': '$where',
     'MATCH': '$elemMatch',
+    'SIZE': '$size',
 
     'in': '$in',
     'nin': '$nin',
@@ -35,6 +36,7 @@ function tryGetOperation(s, j) {
     'text': '$text',
     'where': '$where',
     'match': '$elemMatch',
+    'size': '$size'
   };
 
   for (var i = 5; i >= 0; i--) {
@@ -89,28 +91,15 @@ function parseArgument(s, autoId) {
       }
     }
     else {
-      if (a.slice(-5) === '.size') {
-        a = a.slice(0, a.length - 5);
-        if (ope == '$eq') result[a] = { $size: utils.tryParseValue(b) };
-        else {
-          result[a] = result[a] || {};
-          if (!utils.isObject(result[a])) result[a] = { '$eq': result[a] };
-          result[a]['$size'] = result[a]['$size'] || {};
-          if (!utils.isObject(result[a]['$size'])) result[a]['$size'] = { '$eq': result[a]['$size'] };
-          result[a]['$size'][ope] = utils.tryParseValue(b);
-        }
-      }
+      if (ope == '$eq') result[a] = utils.tryParseValue(b);
       else {
-        if (ope == '$eq') result[a] = utils.tryParseValue(b);
-        else {
-          result[a] = result[a] || {};
-          if (!utils.isObject(result[a])) {
-            result[a] = {
-              '$eq': result[a]
-            };
-          }
-          result[a][ope] = utils.tryParseValue(b);
+        result[a] = result[a] || {};
+        if (!utils.isObject(result[a])) {
+          result[a] = {
+            '$eq': result[a]
+          };
         }
+        result[a][ope] = utils.tryParseValue(b);
       }
     }
   }

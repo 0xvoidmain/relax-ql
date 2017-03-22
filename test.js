@@ -91,12 +91,31 @@ ql.add({
 //   })
 //   .then(reviews => console.log(reviews));
 
-ql`*: Review().limit(10)
-  content
-  rating
-  likes(slice: 3)
-  author:= User[this.author]
-    displayName
-    email`
+// ql`*: Review().limit(10)
+//   content
+//   rating
+//   likes(slice: 3)
+//   author:= User[this.author]
+//     displayName
+//     email`
+// .exec()
+// .then(reviews => console.log(reviews));
+
+ql`
+  reviews: Review(rating >= 3).limit(10)
+    author
+    authorDetail: User[this.author]
+      displayName
+    localBiz:= LocalBiz[this.localBiz]
+      name
+      address
+    likes
+      *: User[this.$value]
+        displayName
+    relatedReviews: Review(localBiz == this.localBiz).limit(3)
+      content
+      author:= User[this.author]
+        displayName
+`
 .exec()
-.then(reviews => console.log(reviews));
+.then(result => console.log(JSON.stringify(result, null, 4)));
