@@ -43,10 +43,12 @@ module.exports = {
 ```
 
 # Setup relax-ql
+```javascript
 var ql = require('relax-ql');
 ql.add({
   models: require('./db')
 });
+```
 
 # Example 1
 You want get 10 reviews from database.
