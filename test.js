@@ -3,29 +3,100 @@ if (typeof Promise === 'undefined') {
 }
 
 var _ = require('lodash');
-var mql = require('./src/mql');
-var ql = require('./client');
+var db = require('./db');
+var { Review, User, LocalBiz, Brand } = db;
 
-mql.init({
+var ql = require('./src/mql');
+ql.add({
   models: require('./db')
 });
-var query = mql(`
-  reviews: Review['56606f2cc614fa1100320e61']
-    rating
-    likes
-      *: User[this.$$value]
-        displayName
-  `, {
-    review_id: '56606f2cc614fa1100320e61'
-  });
 
-query.exec()
-  .then(v => {
-    console.log("result:", JSON.stringify(v, null, 4));
-  })
-  .catch(ex => console.log(ex));
+//Example 1
 
+// ql`*: Review().limit(10)`
+//   .exec()
+//   .then(result => console.log(result));
 
-query = ql`reviews: Review[${123}]`;
+// Review
+//   .find()
+//   .limit(10)
+//   .lean()
+//   .exec()
+//   .then(reviews => console.log(reviews));
 
-console.log(JSON.stringify(query, null, 4));
+//Example 2
+
+// Review
+//   .find()
+//   .limit(10)
+//   .lean()
+//   .exec()
+//   .then(reviews => {
+//     return Promise.all(
+//       reviews.map(review => new Promise((resolve, reject) => {
+//         User.findOne({
+//           _id: review.author
+//         })
+//         .lean()
+//         .exec()
+//         .then(user => {
+//           review.authorDetail = user;
+//           resolve(review);
+//         })
+//         .catch(err => eject(err))
+//       }))
+//     )
+//   })
+//   .then(reviews => console.log(reviews));
+
+// ql`*: Review().limit(10)
+//   authorDetail: User[this.author]`
+// .exec()
+// .then(result => console.log(result));
+
+// Example 3
+
+// Review
+//   .find()
+//   .select({
+//     content: true,
+//     rating: true,
+//     author: true,
+//     likes: {
+//       $slice: 3
+//     }
+//   })
+//   .limit(10)
+//   .lean()
+//   .exec()
+//   .then(reviews => {
+//     return Promise.all(
+//       reviews.map(review => new Promise((resolve, reject) => {
+//         User.findOne({
+//           _id: review.author
+//         })
+//         .select({
+//           displayName: true,
+//           email: true
+//         })
+//         .lean()
+//         .exec()
+//         .then(user => {
+//           review.author = user;
+//           resolve(review);
+//         })
+//         .catch(err => eject(err))
+//       }))
+//     )
+//   })
+//   .then(reviews => console.log(reviews));
+
+ql`*: Review().limit(10)
+  content
+  rating
+  likes(slice: 3)
+  author:= User[this.author]
+    displayName
+    email`
+.exec()
+.then(reviews => console.log(reviews));

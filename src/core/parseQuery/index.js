@@ -54,7 +54,6 @@ function parseQuery(line, i, lineNumber) {
       options: parseOptions(options)
     };
 
-
     return result;
   }
   catch (ex) {

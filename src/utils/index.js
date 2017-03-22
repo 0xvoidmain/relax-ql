@@ -1,3 +1,5 @@
+const parseJSON = require('./parseJSON');
+
 function isObject(o) {
   if (o == undefined || o == null) {
     return false;
@@ -100,6 +102,18 @@ function isStringType(s) {
   return s[0] == '"' && s[s.length - 1] == '"' || s[0] == "'" && s[s.length - 1] == "'";
 }
 
+function isRegexType(s) {
+  return new RegExp('^/(.*?)/([gimy]*)$').test(s);
+}
+
+function isObjectType(s) {
+  return s[0] == '{' && s[s.length - 1] == '}';
+}
+
+function isArrayType(s) {
+  return s[0] == '[' && s[s.length - 1] == ']';
+}
+
 function tryParseValue(s) {
   if (isParam(s)) {
     return s;
@@ -107,11 +121,27 @@ function tryParseValue(s) {
   else if (isStringType(s)) {
     return s.slice(1, s.length - 1);
   }
-  else if (s.toLowerCase() == 'true') {
-    return true;
+  else if (isRegexType(s)) {
+    var match = s.match(new RegExp('^/(.*?)/([gimy]*)$'));
+    return new RegExp(match[1], match[2]);
   }
-  else if (s.toLowerCase() == 'false') {
-    return false;
+  else if (isObjectType(s) || isArrayType(s)) {
+    return parseJSON(s);
+  }
+  else {
+    var sLowerCase = s.toLowerCase()
+    if (sLowerCase == 'true') {
+      return true;
+    }
+    else if (sLowerCase == 'false') {
+      return false;
+    }
+    else if (sLowerCase == 'null') {
+      return null;
+    }
+    else if (sLowerCase == 'undefined') {
+      return undefined;
+    }
   }
 
   var vNumber = null;

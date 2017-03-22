@@ -7,8 +7,7 @@ function fieldDefault(level) {
     level: level,
     name: '',
     query: null,
-    projection: true,
-    selection: false,
+    projection: null,
     fields: {}
   };
 }
@@ -20,10 +19,9 @@ function clean(e) {
   if (!e.query || (!e.query.model && !e.query.method)) {
     delete e.query;
   }
-  else {
+  if (!e.projection) {
     delete e.projection;
   }
-
   if (!e.query && !e.fields)
   {
     return e.projection;
@@ -75,21 +73,25 @@ function parseTemplate(template) {
     for (var j = 0; j < line.length; j++) {
       var c = line[j];
       if (c === ' ' || c === '\t') continue;
-      if (c === ':') {
+      else if (c === ':') {
         if (line[j + 1] === '=') {
-          currentQuery.selection = true;
+          projection = projection || true;
           query = parseQuery(line, j + 2, i);
         }
         else {
           query = parseQuery(line, j + 1, i);
+          projection = false;
         }
         break;
       }
-      if (c === '(') {
-        projection = parseProjection(line, j, i);
-        break;
+      else if (c === '(') {
+        var start = j;
+        for (j; j < line.length && line[j] !== ')'; j++);
+        projection = parseProjection(line, start, j, i);
       }
-      s += c;
+      else {
+        s += c;
+      }
     }
 
     currentQuery.name = s;

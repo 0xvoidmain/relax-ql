@@ -1,4 +1,4 @@
-var parse = require('./src/parse');
+var parse = require('./src/core');
 var utils = require('./src/utils');
 var configUrl = null;
 var requestFunc = null;

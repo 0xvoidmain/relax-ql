@@ -7,18 +7,34 @@ var utils = require('../../utils');
 
 function tryGetOperation(s, j) {
   var defineO = {
-    '==': 'eq',
-    '!=': 'ne',
-    '<': 'lt',
-    '>': 'gt',
-    '<=': 'lte',
-    '>=': 'gte',
-    'IN': 'in',
-    'NIN': 'nin',
-    'ALL': 'all',
-    'in': 'in',
-    'nin': 'nin',
-    'all': 'all'
+    '==': '$eq',
+    '!=': '$ne',
+    '<': '$lt',
+    '>': '$gt',
+    '<=': '$lte',
+    '>=': '$gte',
+
+    'IN': '$in',
+    'NIN': '$nin',
+    'ALL': '$all',
+    'EXISTS': '$exists',
+    'TYPE': '$type',
+    'MOD': '$mod',
+    'REGEX': '$regex',
+    'TEXT': '$text',
+    'WHERE': '$where',
+    'MATCH': '$elemMatch',
+
+    'in': '$in',
+    'nin': '$nin',
+    'all': '$all',
+    'exists': '$exists',
+    'type': '$type',
+    'mod': '$mod',
+    'regex': '$regex',
+    'text': '$text',
+    'where': '$where',
+    'match': '$elemMatch',
   };
 
   for (var i = 5; i >= 0; i--) {
@@ -73,20 +89,19 @@ function parseArgument(s, autoId) {
       }
     }
     else {
-      var size = a.slice(-5) == '.size';
-      if (size) {
+      if (a.slice(-5) === '.size') {
         a = a.slice(0, a.length - 5);
-        if (ope == 'eq') result[a] = { $size: utils.tryParseValue(b) };
+        if (ope == '$eq') result[a] = { $size: utils.tryParseValue(b) };
         else {
           result[a] = result[a] || {};
           if (!utils.isObject(result[a])) result[a] = { '$eq': result[a] };
           result[a]['$size'] = result[a]['$size'] || {};
           if (!utils.isObject(result[a]['$size'])) result[a]['$size'] = { '$eq': result[a]['$size'] };
-          result[a]['$size']['$' + ope] = utils.tryParseValue(b);
+          result[a]['$size'][ope] = utils.tryParseValue(b);
         }
       }
       else {
-        if (ope == 'eq') result[a] = utils.tryParseValue(b);
+        if (ope == '$eq') result[a] = utils.tryParseValue(b);
         else {
           result[a] = result[a] || {};
           if (!utils.isObject(result[a])) {
@@ -94,7 +109,7 @@ function parseArgument(s, autoId) {
               '$eq': result[a]
             };
           }
-          result[a]['$' + ope] = utils.tryParseValue(b);
+          result[a][ope] = utils.tryParseValue(b);
         }
       }
     }
