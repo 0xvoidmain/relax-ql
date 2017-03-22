@@ -6,28 +6,28 @@ mongoose.connect('mongodb://localhost:27017/cityme');
 
 var ReviewSchema = Schema({
   author: ObjectId,
-	localBiz: ObjectId,
-	postedTime: Date,
-	content: String,
-	rating: Number,
-	likes: [ObjectId]
+  localBiz: ObjectId,
+  postedTime: Date,
+  content: String,
+  rating: Number,
+  likes: [ObjectId]
 });
 
 const LocalBizSchema = new Schema({
-	name: String,
-	categories: [String],
-	address: String,
-	rating: Number
+  name: String,
+  categories: [String],
+  address: String,
+  rating: Number
 });
 
 const UserSchema = new Schema({
-	email: String,
-	displayName: String
+  email: String,
+  displayName: String
 });
 
 const BrandSchema = new Schema({
-	name: String,
-	localBizs: [ObjectId]
+  name: String,
+  localBizs: [ObjectId]
 });
 
 var Review = mongoose.model('Review', ReviewSchema);
