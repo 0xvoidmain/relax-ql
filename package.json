@@ -4,7 +4,9 @@
   "description": "A Query language for mongoosejs",
   "main": "index.js",
   "scripts": {
-    "test": "node ./test.js"
+    "test": "node ./test.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "tunght91",
   "license": "ISC",
@@ -12,7 +14,8 @@
     "deep-obj": "^1.2.3",
     "es6-promise": "^4.0.5",
     "lodash": "^4.17.4",
-    "mongoose": "^4.8.5"
+    "mongoose": "^4.8.5",
+    "snyk": "^1.41.1"
   },
   "bugs": {
     "url": "https://github.com/tunght91/relax-ql/issues"
@@ -33,5 +36,6 @@
     "sql",
     "populate"
   ],
-  "homepage": "https://github.com/tunght91/relax-ql#readme"
+  "homepage": "https://github.com/tunght91/relax-ql#readme",
+  "snyk": true
 }
