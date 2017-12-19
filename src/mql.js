@@ -29,7 +29,7 @@ function insteadParam(obj, params, data) {
   if (typeof obj == 'string' && utils.isParam(obj)) {
     return tryGetValue(obj, params, data);
   }
-  else if (_.isPlainObject(obj)) {
+  else if (_.isPlainObject(obj) || Array.isArray(obj)) {
     result = Array.isArray(obj) ? [] : {};
     for (var key in obj) {
       if (utils.isParam(obj[key])) {
@@ -57,16 +57,12 @@ function appendOptions(options, mongoQuery) {
     mongoQuery = mongoQuery.skip(options.skip);
   }
 
-  if (options.unlean != true) {
+  if (options.unlean != true && typeof mongoQuery.lean == 'function') {
     mongoQuery = mongoQuery.lean();
   }
 
-  if (Array.isArray(options.sort) && mongoQuery.sort) {
-    var sort = {};
-    options.sort.forEach((e) => {
-      sort[e.fieldName] = e.type;
-    });
-    mongoQuery = mongoQuery.sort(sort);
+  if (options.sort && mongoQuery.sort) {
+    mongoQuery = mongoQuery.sort(options.sort);
   }
 
   return mongoQuery;

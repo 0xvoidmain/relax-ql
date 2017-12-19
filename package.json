@@ -1,6 +1,6 @@
 {
   "name": "relax-ql",
-  "version": "1.3.2",
+  "version": "1.3.5",
   "description": "A Query language for mongoosejs",
   "main": "index.js",
   "scripts": {

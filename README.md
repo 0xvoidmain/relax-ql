@@ -490,3 +490,4 @@ We have two way to access to parent data.
 
 - Support all logical: AND, OR, NOT
 - Optimize query findOne
+- Fix projection: likes({$slice: 3})
