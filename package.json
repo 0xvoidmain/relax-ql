@@ -12,7 +12,7 @@
     "deep-obj": "^1.2.3",
     "es6-promise": "^4.0.5",
     "lodash": "^4.17.4",
-    "mongoose": "^4.8.5"
+    "mongoose": "^5.12.3"
   },
   "bugs": {
     "url": "https://github.com/tunght91/relax-ql/issues"
